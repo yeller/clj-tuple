@@ -558,7 +558,8 @@
 (defmacro def-conj-tuple []
   (unify-gensyms
     `(defn- conj-tuple [t## x##]
-       (let [^clojure.lang.Counted t## t##]
+       (let [^clojure.lang.Counted t## t##
+             ^clojure.lang.IMeta m## t##]
          (case (.count t##)
            ~@(mapcat
                (fn [^long idx]
@@ -569,9 +570,10 @@
                             (fn [n] `(. ~(with-meta `t## {:tag (str "Tuple" idx)}) ~(symbol (str "e" n))))
                             (range idx))
                         x##
-                        (meta t##)))))
+                        (.meta m##)))))
                (range 6))
-           6 (let [^clojure.lang.Indexed t## t##]
+           6 (let [^clojure.lang.Indexed t## t##
+                   ^clojure.lang.IMeta m## t##]
                (VectorSeq. 0 7
                  (-> []
                    transient
@@ -583,7 +585,7 @@
                    (conj! (.nth t## 5))
                    (conj! x##)
                    persistent!)
-                 (meta t##)))
+                 (.meta m##)))
            )))))
 
 (def-conj-tuple)
